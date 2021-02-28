@@ -2,7 +2,7 @@ import Vector from './vector.js';
 
 class Circle {
 
-    constructor(x, y, radius, vx, vy, mass = 1) {
+    constructor(x, y, radius, vx, vy, mass = 1, recovery = 1) {
         this.x = x;
         this.y = y;
         this.radius = radius;
@@ -10,6 +10,7 @@ class Circle {
         this.vy = vy;
         this.colliding = false;
         this.mass = mass;
+        this.recovery = recovery;
     }
 
     /**
@@ -50,20 +51,20 @@ class Circle {
         }
     }
 
-    checkEdgeCollisionInX(width) {
-        this._checkEdgeCollision(width, 'x', 'vx');
+    checkEdgeCollisionInX(width, edgeRecovery) {
+        this._checkEdgeCollision(...arguments, 'x', 'vx');
     }
 
-    checkEdgeCollisionInY(height) {
-        this._checkEdgeCollision(height, 'y', 'vy');
+    checkEdgeCollisionInY(height, edgeRecovery) {
+        this._checkEdgeCollision(...arguments, 'y', 'vy');
     }
 
-    _checkEdgeCollision(range, coordinate, velocity) {
+    _checkEdgeCollision(range, edgeRecovery, coordinate, velocity) {
         if (this[coordinate] < this.radius) {
-            this[velocity] = -this[velocity];
+            this[velocity] = -this[velocity] * edgeRecovery;
             this[coordinate] = this.radius;
         } else if (this[coordinate] > range - this.radius) {
-            this[velocity] = -this[velocity];
+            this[velocity] = -this[velocity] * edgeRecovery;
             this[coordinate] = range - this.radius;
         }
     }
@@ -90,10 +91,15 @@ class Circle {
         const v2n = velocity2.dot(unitVNorm);
         const v2t = velocity2.dot(unitVTan);
 
-        // 碰撞后的速度
+        // 碰撞后的速度（加上小球对撞的恢复系数）
         // v1nAfter 和 v2nAfter 分别是两小球碰撞后的速度标量
-        const v1nAfter = (v1n * (this.mass - other.mass) + 2 * other.mass * v2n) / (this.mass + other.mass);
-        const v2nAfter = (v2n * (other.mass - this.mass) + 2 * this.mass * v1n) / (this.mass + other.mass);
+        const recovery = Math.min(this.recovery, other.recovery);
+        const v1nAfter =
+            (this.mass * v1n + other.mass * v2n + recovery * other.mass * (v2n - v1n)) /
+            (this.mass + other.mass);
+        const v2nAfter =
+            (this.mass * v1n + other.mass * v2n + recovery * this.mass * (v1n - v2n)) /
+            (this.mass + other.mass);
 
         if (v1nAfter < v2nAfter) {
             // TODO: 两小球会越来越远，此时不用处理碰撞？

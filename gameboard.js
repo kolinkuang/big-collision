@@ -1,5 +1,7 @@
 import Circle from './circle.js';
 
+const EDGE_RECOVER = 0.8;
+
 class Gameboard {
 
     constructor(width, height, context) {
@@ -13,21 +15,21 @@ class Gameboard {
 
     init() {
         this.circles = [
-            new Circle(30, 50, 30, -100, 390, 30),
-            new Circle(60, 180, 20, 180, -275, 20),
-            new Circle(120, 100, 60, 120, 262, 100),
-            new Circle(150, 180, 10, -130, 138, 10),
-            new Circle(190, 210, 10, 138, -280, 10),
-            new Circle(220, 240, 10, 142, 350, 10),
-            new Circle(100, 260, 10, 135, -460, 10),
-            new Circle(120, 285, 10, -165, 370, 10),
-            new Circle(140, 290, 10, 125, 230, 10),
-            new Circle(160, 380, 10, -175, -180, 10),
-            new Circle(180, 310, 10, 115, 440, 10),
-            new Circle(100, 310, 10, -195, -325, 10),
-            new Circle(60, 150, 10, -138, 420, 10),
-            new Circle(70, 430, 45, 135, -230, 45),
-            new Circle(250, 290, 40, -140, 335, 40)
+            new Circle(30, 50, 30, -100, 390, 30, 0.7),
+            new Circle(60, 180, 20, 180, -275, 20, 0.7),
+            new Circle(120, 100, 60, 120, 262, 100, 0.3),
+            new Circle(150, 180, 10, -130, 138, 10, 0.7),
+            new Circle(190, 210, 10, 138, -280, 10, 0.7),
+            new Circle(220, 240, 10, 142, 350, 10, 0.7),
+            new Circle(100, 260, 10, 135, -460, 10, 0.7),
+            new Circle(120, 285, 10, -165, 370, 10, 0.7),
+            new Circle(140, 290, 10, 125, 230, 10, 0.7),
+            new Circle(160, 380, 10, -175, -180, 10, 0.7),
+            new Circle(180, 310, 10, 115, 440, 10, 0.7),
+            new Circle(100, 310, 10, -195, -325, 10, 0.7),
+            new Circle(60, 150, 10, -138, 420, 10, 0.7),
+            new Circle(70, 430, 45, 135, -230, 45, 0.7),
+            new Circle(250, 290, 40, -140, 335, 40, 0.7)
         ];
         window.requestAnimationFrame(this.process.bind(this));
     }
@@ -47,13 +49,13 @@ class Gameboard {
             this.circles[i].draw(this.context);
         }
 
-        this.checkCollision();
+        this.checkDualCollision();
         this.checkEdgeCollision();
 
         window.requestAnimationFrame(this.process.bind(this));
     }
 
-    checkCollision() {
+    checkDualCollision() {
         // 重置碰撞状态
         this.circles.forEach(circle => circle.colliding = false);
         for (let i = 0; i < this.circles.length; i++) {
@@ -67,9 +69,9 @@ class Gameboard {
     checkEdgeCollision() {
         this.circles.forEach(circle => {
             // 左右墙壁碰撞
-            circle.checkEdgeCollisionInX(this.width);
+            circle.checkEdgeCollisionInX(this.width, EDGE_RECOVER);
             // 上下墙壁碰撞
-            circle.checkEdgeCollisionInY(this.height);
+            circle.checkEdgeCollisionInY(this.height, EDGE_RECOVER);
         });
     }
 

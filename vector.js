@@ -23,7 +23,7 @@ class Vector {
 
     /**
      * 向量与标量乘法
-     * @param {Vector} s
+     * @param {Number} s
      */
     multiply(s) {
         return new Vector(this.x * s, this.y * s);
@@ -41,7 +41,9 @@ class Vector {
      * 向量标准化（除去长度）
      */
     normalize() {
-        let distance = Math.sqrt(this.x * this.x + this.y * this.y);
+        const distance = Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
         return new Vector(this.x / distance, this.y / distance);
     }
 }
+
+export default Vector;

@@ -1,5 +1,7 @@
 import Vector from './vector.js';
 
+const GRAVITY = 980;
+
 class Circle {
 
     constructor(x, y, radius, vx, vy, mass = 1, recovery = 1) {
@@ -31,6 +33,7 @@ class Circle {
      * @param {Number} seconds
      */
     update(seconds) {
+        this.vy += GRAVITY * seconds; // 重力加速度
         this.x += this.vx * seconds;
         this.y += this.vy * seconds;
     }
